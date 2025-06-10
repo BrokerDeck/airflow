@@ -15,13 +15,21 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
-
-from datetime import datetime
-
 from airflow.models import DAG
-from airflow.operators.dummy import DummyOperator
+from airflow.utils.dates import days_ago
 
-for i in range(1, 2):
-    dag = DAG(dag_id=f'test_latest_runs_{i}')
-    task = DummyOperator(task_id='dummy_task', dag=dag, owner='airflow', start_date=datetime(2016, 2, 1))
+args = {'owner': 'airflow', 'retries': 3, 'start_date': days_ago(2)}
+
+tree_dag = DAG(
+    dag_id='test_tree_view',
+    default_args=args,
+    schedule_interval='0 0 * * *',
+    default_view='tree',
+)
+
+graph_dag = DAG(
+    dag_id='test_graph_view',
+    default_args=args,
+    schedule_interval='0 0 * * *',
+    default_view='graph',
+)
